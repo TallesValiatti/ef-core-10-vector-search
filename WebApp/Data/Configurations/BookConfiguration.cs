@@ -28,7 +28,7 @@ public static class BookConfiguration
         
         modelBuilder.Entity<Book>()
             .Property(b => b.Embedding)
-            .HasColumnType("vector(3072)");
+            .HasColumnType("vector(1536)");
     }
     
     public static List<Book> GetSeedData()
