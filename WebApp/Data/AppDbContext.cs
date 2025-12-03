@@ -1,13 +1,18 @@
 using Microsoft.EntityFrameworkCore;
+using WebApp.Data.Configurations;
+using WebApp.Models;
 
 namespace WebApp.Data;
 
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    public DbSet<Book> Books => Set<Book>();
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        
+        BookConfiguration.Configure(modelBuilder);
         
         foreach (var item in modelBuilder.Model.GetEntityTypes())
         {

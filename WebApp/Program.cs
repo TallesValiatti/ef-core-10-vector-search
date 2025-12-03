@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApp.Data;
+using WebApp.Extensions;
 using WebApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,9 @@ builder.Services.AddScoped<EmbeddingsService>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+// Seed database with embeddings
+await app.Services.SeedDatabaseAsync();
 
 // Configure the HTTP request pipeline.
 app.UseHttpsRedirection();
