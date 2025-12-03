@@ -17,6 +17,7 @@ public class EmbeddingsService(IConfiguration configuration)
     {
         var options = new EmbeddingsOptions(texts)
         {
+            Dimensions = 1536,
             Model = configuration["MicrosoftFoundry:Model"]
         };
         
