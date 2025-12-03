@@ -20,13 +20,6 @@ public static class DatabaseSeederExtensions
             // Ensure database is created
             await context.Database.EnsureCreatedAsync();
             
-            // Check if data already exists
-            if (await context.Books.AnyAsync())
-            {
-                logger.LogInformation("Database already seeded. Skipping seed operation.");
-                return;
-            }
-            
             logger.LogInformation("Starting database seeding...");
             
             // Get seed data from configuration
@@ -35,7 +28,17 @@ public static class DatabaseSeederExtensions
             // Generate embeddings for each book
             foreach (var book in seedData)
             {
-                logger.LogInformation("Generating embedding for: {BookName}", book.Name);
+                var existingByName = await context.Books
+                    .FirstOrDefaultAsync(b => b.Name == book.Name);
+                
+                if (existingByName != null)
+                {
+                    logger.LogInformation("Book with name '{BookName}' already exists (ID: {ExistingId}). Skipping.", 
+                        book.Name, existingByName.Id);
+                    continue;
+                }
+                
+                logger.LogInformation("Generating embedding for: {BookName} (ID: {BookId})", book.Name, book.Id);
                 
                 // Combine name and description for embedding
                 var textToEmbed = $"{book.Name}. {book.Description}";
@@ -45,13 +48,15 @@ public static class DatabaseSeederExtensions
                 book.Embedding = new SqlVector<float>(embeddingArray);
                 
                 logger.LogInformation("Embedding generated successfully for: {BookName}", book.Name);
+                
+                // Add book to database
+                await context.Books.AddAsync(book);
             }
             
-            // Add all books to database
-            await context.Books.AddRangeAsync(seedData);
-            await context.SaveChangesAsync();
+            // Save all changes
+            var savedCount = await context.SaveChangesAsync();
             
-            logger.LogInformation("Database seeding completed successfully. {Count} books seeded.", seedData.Count);
+            logger.LogInformation("Database seeding completed successfully. {Count} books seeded.", savedCount);
         }
         catch (Exception ex)
         {

@@ -15,7 +15,6 @@ public static class BookConfiguration
         
         modelBuilder.Entity<Book>()
             .Property(x => x.Id)
-            .HasMaxLength(50)
             .IsRequired();
         
         modelBuilder.Entity<Book>()
@@ -38,7 +37,7 @@ public static class BookConfiguration
         {
             new()
             {
-                Id = "book-001",
+                Id = Guid.NewGuid(),
                 Name = "The Lord of the Rings: The Fellowship of the Ring",
                 Description = @"The Fellowship of the Ring is the first volume of J.R.R. Tolkien's epic high fantasy novel The Lord of the Rings. Set in Middle-earth, the story follows the hobbit Frodo Baggins as he and the Fellowship embark on a quest to destroy the One Ring and defeat the dark lord Sauron. This masterpiece of fantasy literature has captivated readers for generations with its richly detailed world-building, complex characters, and timeless themes of friendship, courage, and the struggle between good and evil.
 
@@ -50,7 +49,7 @@ Tolkien's masterful prose brings Middle-earth to life with vivid descriptions of
             },
             new()
             {
-                Id = "book-002",
+                Id = Guid.NewGuid(),
                 Name = "The Shining",
                 Description = @"The Shining is a horror novel by Stephen King, first published in 1977. It tells the story of Jack Torrance, an aspiring writer and recovering alcoholic who accepts a position as the off-season caretaker of the historic Overlook Hotel in the Colorado Rockies. His five-year-old son Danny possesses psychic abilities, known as 'the shining,' which allows him to see the hotel's horrific past and terrible future.
 
@@ -62,7 +61,7 @@ King masterfully builds tension and dread throughout the novel, exploring themes
             },
             new()
             {
-                Id = "book-003",
+                Id = Guid.NewGuid(),
                 Name = "Salt, Fat, Acid, Heat: Mastering the Elements of Good Cooking",
                 Description = @"Salt, Fat, Acid, Heat by Samin Nosrat is a groundbreaking cookbook that distills the fundamental elements of good cooking into four simple components. This beautifully illustrated guide teaches readers how to use salt, fat, acid, and heat to transform basic ingredients into extraordinary meals. Rather than focusing on recipes, Nosrat empowers home cooks to understand the principles behind cooking, enabling them to cook intuitively and confidently without relying solely on written instructions.
 
@@ -74,7 +73,7 @@ What sets this book apart is its emphasis on developing taste and intuition rath
             },
             new()
             {
-                Id = "book-004",
+                Id = Guid.NewGuid(),
                 Name = "Dune",
                 Description = @"Dune is a science fiction masterpiece by Frank Herbert, published in 1965. Set in the distant future amidst a sprawling feudal interstellar society, the novel tells the story of young Paul Atreides, whose family accepts stewardship of the desert planet Arrakis. This harsh world is the only source of melange, or 'spice,' the most valuable substance in the universe—a drug that extends life, enhances mental abilities, and is essential for space travel. Control of Arrakis means control of the spice, and control of the spice means control of the universe.
 
@@ -86,7 +85,7 @@ Herbert's novel is far more than a simple adventure story. It explores complex t
             },
             new()
             {
-                Id = "book-005",
+                Id = Guid.NewGuid(),
                 Name = "The Girl with the Dragon Tattoo",
                 Description = @"The Girl with the Dragon Tattoo is a psychological thriller by Swedish author Stieg Larsson, the first book in the Millennium series. The novel weaves together two parallel narratives: a decades-old disappearance mystery and an exposé of corporate corruption. Mikael Blomkvist, a journalist recently convicted of libel, is hired by wealthy industrialist Henrik Vanger to investigate the forty-year-old disappearance of his niece, Harriet Vanger, who vanished from the isolated Vanger family island during a family gathering.
 
@@ -98,7 +97,7 @@ Larsson's novel is a searing indictment of misogyny and violence against women i
             },
             new()
             {
-                Id = "book-006",
+                Id = Guid.NewGuid(),
                 Name = "Pride and Prejudice",
                 Description = @"Pride and Prejudice is Jane Austen's beloved romantic novel, published in 1813. Set in rural England at the turn of the 19th century, it follows the Bennet family, particularly the second eldest daughter Elizabeth, as she navigates issues of marriage, morality, education, and social standing. The novel opens with one of the most famous lines in English literature: 'It is a truth universally acknowledged, that a single man in possession of a good fortune, must be in want of a wife.' This sets the stage for a story about marriage in a society where women's financial security depends on finding a suitable husband.
 

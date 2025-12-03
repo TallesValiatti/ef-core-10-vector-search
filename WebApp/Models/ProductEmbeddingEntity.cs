@@ -5,7 +5,7 @@ namespace WebApp.Models;
 
 public class Book
 {
-    public string Id { get; set; } = default!;
+    public Guid Id { get; set; }
 
     public string Name { get; set; } = default!;
 
