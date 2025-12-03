@@ -1,0 +1,35 @@
+=== SEARCH QUERY EXAMPLES ===
+
+--- SHORT QUERIES ---
+
+[EN-US]
+ - scary stories
+ - fantasy adventures
+
+[PT-BR]
+ - histórias assustadoras
+ - aventuras de fantasia
+
+
+--- MEDIUM QUERIES ---
+
+[EN-US]
+ - books about overcoming prejudice and finding true love
+ - stories with dark psychological themes and isolation
+
+[PT-BR]
+ - livros sobre superar preconceitos e encontrar o amor verdadeiro
+ - histórias com temas psicológicos sombrios e isolamento
+
+
+--- LONG QUERIES ---
+
+[EN-US]
+ - I'm looking for a book about a group of friends going on a dangerous adventure to destroy an evil object, with themes of loyalty, sacrifice, and the battle between good and evil in a fantasy world with elves, dwarves, and magic
+ 
+ - Can you recommend a horror story about a family isolated in a remote location during winter, where the father struggles with alcoholism and descends into madness influenced by supernatural forces, exploring themes of addiction and domestic violence
+
+[PT-BR]
+ - Estou procurando um livro sobre um grupo de amigos que embarcam em uma aventura perigosa para destruir um objeto maligno, com temas de lealdade, sacrifício e a batalha entre o bem e o mal em um mundo de fantasia com elfos, anões e magia
+ 
+ - Você pode recomendar uma história de terror sobre uma família isolada em um local remoto durante o inverno, onde o pai luta contra o alcoolismo e descende à loucura influenciado por forças sobrenaturais, explorando temas de vício e violência doméstica
