@@ -1,0 +1,250 @@
+@{
+    ViewData["Title"] = "Book Search";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <h1 class="mb-3">
+                <i class="bi bi-search me-2"></i>Book Vector Search
+            </h1>
+            <p class="text-muted mb-4">Search for books using natural language and semantic similarity</p>
+
+            <!-- Search Form -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body p-3">
+                    <form id="searchForm" class="row g-3">
+                        <div class="col-md-6">
+                            <label for="searchQuery" class="form-label fw-semibold">Search Query</label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="searchQuery" 
+                                   name="searchQuery" 
+                                   placeholder="e.g., 'books about coding practices' or 'fantasy adventures'">
+                            <small class="form-text text-muted">
+                                Enter text to find similar books, or leave empty to show all books
+                            </small>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="threshold" class="form-label fw-semibold">Distance Threshold <span class="badge bg-secondary">Optional</span></label>
+                            <input type="number" 
+                                   class="form-control" 
+                                   id="threshold" 
+                                   name="threshold" 
+                                   step="0.01"
+                                   min="0"
+                                   max="2"
+                                   placeholder="e.g., 0.5">
+                            <small class="form-text text-muted">
+                                Max distance cosine distance
+                            </small>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100" id="searchButton">
+                                <i class="bi bi-search me-1"></i>Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="text-center py-5" style="display: none;">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-3 text-muted">Searching for similar books...</p>
+            </div>
+
+            <!-- Error Alert -->
+            <div id="errorAlert" class="alert alert-danger alert-dismissible fade show" role="alert" style="display: none;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <span id="errorMessage"></span>
+                <button type="button" class="btn-close" onclick="$('#errorAlert').hide()"></button>
+            </div>
+
+            <!-- Results Table -->
+            <div id="resultsContainer" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="mb-0">
+                        <i class="bi bi-list-ul me-2"></i>Search Results
+                    </h3>
+                    <span class="badge bg-info text-dark" id="resultsCount"></span>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th style="width: 25%;">Book Name</th>
+                                <th style="width: 50%;">Description</th>
+                                <th style="width: 10%;" class="text-center">Distance</th>
+                                <th style="width: 15%;" class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody">
+                            <!-- Results will be inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Book Description Modal -->
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Book Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h4 id="modalBookName" class="mb-3"></h4>
+                <p id="modalBookDescription" style="white-space: pre-line;"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            const searchForm = $('#searchForm');
+            const searchButton = $('#searchButton');
+            const loadingSpinner = $('#loadingSpinner');
+            const errorAlert = $('#errorAlert');
+            const resultsContainer = $('#resultsContainer');
+            const resultsTableBody = $('#resultsTableBody');
+            const descriptionModal = new bootstrap.Modal(document.getElementById('descriptionModal'));
+
+            searchForm.on('submit', function(e) {
+                e.preventDefault();
+                
+                const searchQuery = $('#searchQuery').val().trim();
+                const threshold = $('#threshold').val();
+
+                performSearch(searchQuery, threshold);
+            });
+
+            function performSearch(query, threshold) {
+                // Reset UI
+                hideError();
+                resultsContainer.hide();
+                resultsTableBody.empty();
+                
+                // Show loading
+                searchButton.prop('disabled', true);
+                loadingSpinner.show();
+
+                const data = { searchQuery: query };
+                if (threshold) {
+                    data.threshold = threshold; // Send as string, let server parse it
+                }
+
+                $.ajax({
+                    url: '@Url.Action("Search", "Search")',
+                    type: 'POST',
+                    data: data,
+                    success: function(response) {
+                        loadingSpinner.hide();
+                        searchButton.prop('disabled', false);
+
+                        if (response.success) {
+                            displayResults(response.books);
+                        } else {
+                            showError(response.message || 'An error occurred while searching.');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        loadingSpinner.hide();
+                        searchButton.prop('disabled', false);
+                        showError('An error occurred while searching. Please try again.');
+                        console.error('Search error:', error);
+                    }
+                });
+            }
+
+            function displayResults(books) {
+                if (!books || books.length === 0) {
+                    showError('No books found matching your query.');
+                    return;
+                }
+
+                resultsTableBody.empty();
+                $('#resultsCount').text(books.length + ' book(s) found');
+
+                books.forEach(function(book) {
+                    const row = $('<tr>');
+                    
+                    // Book Name
+                    const nameCell = $('<td>')
+                        .html('<strong class="text-primary">' + escapeHtml(book.name) + '</strong>');
+                    
+                    // Truncated Description
+                    const descCell = $('<td>')
+                        .html('<small class="text-muted">' + escapeHtml(book.description) + '</small>');
+                    
+                    // Distance Score
+                    const distanceCell = $('<td>').addClass('text-center');
+                    if (book.distance !== null && book.distance !== undefined) {
+                        const badgeClass = book.distance < 0.5 ? 'bg-success' : 
+                                          book.distance < 1.0 ? 'bg-warning text-dark' : 
+                                          'bg-secondary';
+                        const badge = $('<span>')
+                            .addClass('badge ' + badgeClass)
+                            .text(book.distance.toFixed(4));
+                        distanceCell.append(badge);
+                    } else {
+                        distanceCell.html('<span class="text-muted">-</span>');
+                    }
+                    
+                    // Action Button
+                    const actionCell = $('<td>').addClass('text-center');
+                    const viewButton = $('<button>')
+                        .addClass('btn btn-sm btn-outline-primary')
+                        .html('<i class="bi bi-eye me-1"></i>View Details')
+                        .on('click', function() {
+                            showFullDescription(book.name, book.fullDescription);
+                        });
+                    actionCell.append(viewButton);
+
+                    row.append(nameCell, descCell, distanceCell, actionCell);
+                    resultsTableBody.append(row);
+                });
+
+                resultsContainer.show();
+            }
+
+            function showFullDescription(bookName, fullDescription) {
+                $('#modalBookName').text(bookName);
+                $('#modalBookDescription').text(fullDescription);
+                descriptionModal.show();
+            }
+
+            function showError(message) {
+                $('#errorMessage').text(message);
+                errorAlert.show();
+            }
+
+            function hideError() {
+                errorAlert.hide();
+            }
+
+            function escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+        });
+    </script>
+}
+
